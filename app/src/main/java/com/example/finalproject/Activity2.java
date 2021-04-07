@@ -29,25 +29,18 @@ public class Activity2 extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(Activity2.this, "histories.db",
                 null, 1);
 
-        search= findViewById(R.id.button_search);
-        history= findViewById(R.id.button_history);
-        searchView=findViewById(R.id.searchView);
-
-
-        search.setOnClickListener(new View.OnClickListener(){
+        search = findViewById(R.id.button_search);
+        history = findViewById(R.id.button_history);
+        searchView = findViewById(R.id.searchView);
+        search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String searched= searchView.getQuery().toString();
-                Date currentTime = Calendar.getInstance().getTime();
-                String time= currentTime.toString();
-                Calendar currentDate= Calendar.getInstance();
-                String date=currentDate.toString();
-
+                String searched =searchView.getQuery().toString();
                 if(searched.isEmpty()){
                     Toast.makeText(Activity2.this, "missing feilds", Toast.LENGTH_SHORT).show();;
                 }
                 else {
-                    long rowID=databaseHelper.addHistory(new History(searched, date, time));
+                    long rowID=databaseHelper.addHistory(new History(searched));
                     Toast.makeText(Activity2.this, "RowId: " + rowID, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -60,9 +53,9 @@ public class Activity2 extends AppCompatActivity {
             }
         });
     }
+        public void launchNextActivity (View v){
+            Intent intent = new Intent(Activity2.this, historyActivity.class);
+            startActivity(intent);
+        }
 
-    public void launchNextActivity(View v){
-        Intent intent = new Intent(Activity2.this, historyActivity.class);
-        startActivity(intent);
-    }
 }

@@ -25,13 +25,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String sqlStatement= "CREATE TABLE " + DatabaseContract.UserEntry.TABLE_NAME + "(" +
                 DatabaseContract.UserEntry.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                DatabaseContract.UserEntry.COLUMN_SEARCH + " TEXT," +
-                DatabaseContract.UserEntry.COLUMN_DATE + " TEXT," +
-                DatabaseContract.UserEntry.COLUMN_TIME +" TEXT)";
+                DatabaseContract.UserEntry.COLUMN_SEARCH + " TEXT)";
 
         SQLiteStatement statement= db.compileStatement(sqlStatement);
         statement.execute();
-
 
     }
 
@@ -44,18 +41,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase database = getWritableDatabase();
         String sqlQuery= "INSERT INTO " + DatabaseContract.UserEntry.TABLE_NAME+
-                "(" + DatabaseContract.UserEntry.COLUMN_SEARCH + "," +
-                DatabaseContract.UserEntry.COLUMN_DATE+
-                DatabaseContract.UserEntry.COLUMN_TIME+ ") VALUES (?,?,?)";
+                "(" + DatabaseContract.UserEntry.COLUMN_SEARCH +") VALUES (?)";
 
         SQLiteStatement statement= database.compileStatement(sqlQuery);
         String search= history.getSearchText();
-        String date= history.getDate();
-        String time=history.getTime();
-
         statement.bindString(1,search);
-        statement.bindString(2, date);
-        statement.bindString(3,time);
 
         long rowID= statement.executeInsert();
         database.close();
@@ -73,9 +63,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if(resultSet.moveToFirst()){
             do{
                 String historyText= resultSet.getString(1);
-                String historyDate = resultSet.getString(2);
-                String historyTime= resultSet.getString(3);
-                History history= new History(historyText, historyDate, historyTime);
+//                String historyDate = resultSet.getString(2);
+//                String historyTime= resultSet.getString(3);
+                History history= new History(historyText);
                 histories.add(history);
                 long history_id = resultSet.getLong(0);
                 history.setId(history_id);

@@ -15,8 +15,6 @@ public class DatabaseContract {
         public static final String TABLE_NAME="history_table";
         public static final String COLUMN_ID="id";
         public static final String COLUMN_SEARCH="searchText";
-        public static final String COLUMN_DATE="date";
-        public static final String COLUMN_TIME ="time";
     }
 
 }

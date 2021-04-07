@@ -39,9 +39,9 @@ public class historyAdapter extends RecyclerView.Adapter<historyAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         History history= histories.get(position);
-        holder.time.setText(history.getDate());
+//        holder.time.setText(history.getDate());
         holder.searched.setText(history.getSearchText());
-        holder.date.setText(history.getDate());
+//        holder.date.setText(history.getDate());
     }
 
     @Override
@@ -51,14 +51,14 @@ public class historyAdapter extends RecyclerView.Adapter<historyAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView searched;
-        TextView date;
-        TextView time;
+//        TextView date;
+//        TextView time;
         Button delete;
         public ViewHolder(View item){
             super(item);
             searched=item.findViewById(R.id.textView_searched);
-            time= item.findViewById(R.id.textView_time);
-            date=item.findViewById(R.id.textView_date);
+//            time= item.findViewById(R.id.textView_time);
+//            date=item.findViewById(R.id.textView_date);
             delete= item.findViewById(R.id.button_delete);
             delete.setOnClickListener(this);
         }
