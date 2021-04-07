@@ -13,25 +13,10 @@ import java.util.List;
 public class historyActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView_history;
-    private DatabaseHelper databaseHelper;
-    private List<History> histories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.history);
-
-        recyclerView_history=findViewById(R.id.recyclerView_history);
-        databaseHelper = new DatabaseHelper(historyActivity.this, "histories.db",
-                null, 1);
-
-        histories=databaseHelper.getAllHistory();
-        historyAdapter adapter = new historyAdapter(histories, databaseHelper, historyActivity.this);
-        recyclerView_history.setAdapter(adapter);
-        recyclerView_history.setLayoutManager(new LinearLayoutManager(historyActivity.this));
-
-        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(historyActivity.this, DividerItemDecoration.VERTICAL);
-        recyclerView_history.addItemDecoration(itemDecoration);
-
     }
 }

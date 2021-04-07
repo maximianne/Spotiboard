@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     public void launchNextActivity(View v){
-        Intent intent = new Intent(MainActivity.this, Activity2.class);
+        Intent intent = new Intent(MainActivity.this, Activity1.class);
         startActivity(intent);
     }
 }

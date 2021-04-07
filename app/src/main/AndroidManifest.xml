@@ -16,14 +16,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activity1"
+            android:parentActivityName=".MainActivity"
+            android:label= "activity_1"
+            >
+        </activity>
 
         <activity android:name=".Activity2"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".Activity1"
             android:label= "activity_2"
             >
 
         </activity>
-
         <activity android:name=".historyActivity"
             android:parentActivityName=".Activity2"
             android:label= "activity_his"
