@@ -41,6 +41,12 @@
 
         </activity>
 
+        <activity android:name=".CreateAccount"
+            android:parentActivityName=".Activity1"
+            android:label= "Create Account"
+            >
+
+        </activity>
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

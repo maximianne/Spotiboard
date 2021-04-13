@@ -2,4 +2,6 @@
     <string name="app_name">FinalProject</string>
     <string name="delete">Delete</string>
     <string name="textview_time">TextView_time</string>
+    <string name="textView_create">Create Your Account</string>
+    <string name="button_create">Create Account</string>
 </resources>
