@@ -52,6 +52,7 @@
         app:layout_constraintTop_toBottomOf="@+id/button_search" />
 
     <LinearLayout
+        android:id="@+id/linearlayoutact2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="32dp"
@@ -61,8 +62,10 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/button_history"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintVertical_bias="1.0"></LinearLayout>
 
     <Button
         android:id="@+id/button_history"
