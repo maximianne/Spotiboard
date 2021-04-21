@@ -113,6 +113,7 @@ public class Activity2 extends AppCompatActivity {
                         Log.d("MainActivity", "Connected! Yay!");
 
                         // Now you can start interacting with App Remote
+                        //Need to add the code for the url here
                         connected();
 
                     }
