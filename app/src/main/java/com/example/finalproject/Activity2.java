@@ -1,29 +1,25 @@
 package com.example.finalproject;
 
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.types.Track;
 
 public class Activity2 extends AppCompatActivity {
     private Button search;
     private Button history;
     private SearchView searchView;
-    private String urltt1 ="https://api.spotify.com/v1/artists/";
-    private String urltt2="/top-tracks";
-    private String searchText;
-    private String CompleteURL;
+
+    private static final String CLIENT_ID = "3Nrfpe0tUJi4K4DXYWgMUX";
+    private static final String REDIRECT_URI = "http://com.yourdomain.yourapp/callback";
+    private SpotifyAppRemote mSpotifyAppRemote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,54 +30,57 @@ public class Activity2 extends AppCompatActivity {
         history = findViewById(R.id.button_history);
         searchView = findViewById(R.id.searchView);
 
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchText=searchView.getQuery().toString();
-                if(!searchText.equals("")){
-                    if(!getArtistID(searchText).equals("")){
-                        CompleteURL=makeURLtopTracks(getArtistID(searchText));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ConnectionParams connectionParams =
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(REDIRECT_URI)
+                        .showAuthView(true)
+                        .build();
+
+        SpotifyAppRemote.connect(this, connectionParams,
+                new Connector.ConnectionListener() {
+
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote;
+                        Log.d("MainActivity", "Connected! Yay!");
+
+                        // Now you can start interacting with App Remote
+                        connected();
+
                     }
-                }
-            }
-        });
 
-    }
-    private String makeURLtopTracks(String id){
-        return urltt1+id+urltt2;
-    }
-    private String getArtistID(String artist){
-        String id="";
-        try {
-            JSONObject SpotJSON = new JSONObject(loadJSONFromAsset("spotify.json"));
-            JSONArray spotArray = SpotJSON.getJSONArray("spotifyArtists");
+                    public void onFailure(Throwable throwable) {
+                        Log.e("MyActivity", throwable.getMessage(), throwable);
 
-            for(int i = 0; i< spotArray.length(); i++){
-                JSONObject artObject = spotArray.getJSONObject(i);
+                        // Something went wrong when attempting to connect! Handle errors here
+                    }
+                });
+    }
 
-                if(artObject.getString("name").equals(artist)){
-                    id= artObject.getString("id");
-                }
-            }
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return id;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
-    private String loadJSONFromAsset(String filename) {
-        String json = null;
-        try {
-            InputStream is = this.getAssets().open(filename);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
+
+    private void connected() {
+        // Play a playlist
+        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
+
+        // Subscribe to PlayerState
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    final Track track = playerState.track;
+                    if (track != null) {
+                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+                    }
+                });
     }
+
+
 }
