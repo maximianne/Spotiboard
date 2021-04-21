@@ -27,8 +27,8 @@ public class Activity2 extends AppCompatActivity {
     private String searchText;
     private String CompleteURL;
 
-    private static final String CLIENT_ID = "3Nrfpe0tUJi4K4DXYWgMUX";
-    private static final String REDIRECT_URI = "http://com.yourdomain.yourapp/callback";
+    private static final String CLIENT_ID = "91eb5710fc9e4319bb9b971779ce0393";
+    private static final String REDIRECT_URI = "https://www.getpostman.com/oauth2/callback";
     private SpotifyAppRemote mSpotifyAppRemote;
 
     private String urltt1 ="https://api.spotify.com/v1/artists/";
@@ -43,13 +43,14 @@ public class Activity2 extends AppCompatActivity {
         history = findViewById(R.id.button_history);
         searchView = findViewById(R.id.searchView);
 
-        search.setOnClickListener(new View.OnClickListener() {
+        search.setOnClickListener(new View.OnClickListener() { //Maxie's code
             @Override
             public void onClick(View v) {
                 searchText=searchView.getQuery().toString();
                 if(!searchText.equals("")){
                     if(!getArtistID(searchText).equals("")){
                         CompleteURL=makeURLtopTracks(getArtistID(searchText));
+                        onStart();
                     }
                 }
             }
