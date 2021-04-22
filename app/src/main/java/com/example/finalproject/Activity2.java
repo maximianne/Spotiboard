@@ -1,13 +1,17 @@
 package com.example.finalproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -19,6 +23,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 public class Activity2 extends AppCompatActivity {
     private Button search;
@@ -33,6 +40,8 @@ public class Activity2 extends AppCompatActivity {
 
     private String urltt1 ="https://api.spotify.com/v1/artists/";
     private String urltt2="/top-tracks";
+    private static AsyncHttpClient client = new AsyncHttpClient();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +59,31 @@ public class Activity2 extends AppCompatActivity {
                 if(!searchText.equals("")){
                     if(!getArtistID(searchText).equals("")){
                         CompleteURL=makeURLtopTracks(getArtistID(searchText));
-                        onStart();
+                      //  onStart();
+
+                        client.addHeader("accept", "application/json");
+                        client.get(CompleteURL, new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                Log.d("api response", new String(responseBody));
+                                ArrayList<String> list= new ArrayList<String>();
+                                try {
+                                    JSONObject json = new JSONObject(new String(responseBody));
+//
+                                }
+                                catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                Log.e("api error", new String(responseBody));
+                            }
+                        });
                     }
+                }
+                else{
+                    Toast.makeText(Activity2.this, "Artist does not exist", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -146,6 +178,4 @@ public class Activity2 extends AppCompatActivity {
                     }
                 });
     }
-
-
 }
