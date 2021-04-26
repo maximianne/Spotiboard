@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class Activity3 extends AppCompatActivity {
     private TextView artistName;
     private SharedPreferences sharedPreferences;
     private String artistID;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,19 +40,24 @@ public class Activity3 extends AppCompatActivity {
         artistID=intent.getStringExtra("artistID");
 
         artistName= findViewById(R.id.textView_artistname);
+        recyclerView= findViewById(R.id.recyclerView_act3);
         setArtistN(artistID);
+        getArtistTTracks(artistID);
     }
 
-    public void getArtistTTracks(String id){
+    public void getArtistTTracks(String artistID){
         SpotifyApi api= getSpotifyService();
         SpotifyService spotify = api.getService();
         spotify.getArtistTopTrack(artistID, "US", new Callback<Tracks>() {
             @Override
             public void success(Tracks tracks, retrofit.client.Response response) {
+                //Log.d("TRACKS", tracks.tracks.toString());
                 ArrayList<String> toAdd=new ArrayList<>();
-                for(int i=0;i<0;i++) {
-                    toAdd.add(tracks.tracks.get(i).toString());
+                for(int i=0;i<tracks.tracks.size();i++) {
+                    toAdd.add(tracks.tracks.get(i).name);
+                    Log.d("TOP TRACKS", tracks.tracks.get(i).name);
                 }
+
             }
             @Override
             public void failure(RetrofitError error) {
@@ -58,7 +65,7 @@ public class Activity3 extends AppCompatActivity {
         });
     }
 
-    public void setArtistN(String id){
+    public void setArtistN(String artistID){
         SpotifyApi api= getSpotifyService();
         SpotifyService spotify = api.getService();
         spotify.getArtist(artistID, new Callback<Artist>() {
@@ -78,7 +85,6 @@ public class Activity3 extends AppCompatActivity {
         SpotifyApi api = new SpotifyApi();
         String token=sharedPreferences.getString("token", "");
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
-
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request newRequest  = chain.request().newBuilder()
@@ -90,5 +96,4 @@ public class Activity3 extends AppCompatActivity {
         api.setAccessToken(token);
         return api;
     }
-
 }
