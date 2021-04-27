@@ -46,7 +46,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase database = getWritableDatabase();
 
-        //INSERT INTO user_table (name,phone) values ("Maxie", "123");
         String sqlQuery= "INSERT INTO " + DatabaseContract.UserEntry.TABLE_NAME +
                 "(" + DatabaseContract.UserEntry.COLUMN_NAME + ") VALUES (?)";
 
@@ -65,7 +64,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //query all the user from the table
 
     public List<History> getAllHistory(){
-        //SELECT * FROM table_name
 
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
 
@@ -87,9 +85,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 histories.add(history);
                 long user_id = resultSet.getLong(0);
                 history.setId(user_id);
-
-
-            }while(resultSet.moveToNext());
+            }
+            while(resultSet.moveToNext());
         }
         resultSet.close();
         sqLiteDatabase.close();

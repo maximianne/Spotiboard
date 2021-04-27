@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,18 +53,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             super(item);
             name=item.findViewById(R.id.textView5);
             delete=item.findViewById(R.id.imageView3);
-
             delete.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            //when button delete is clicked, I want to call the delete user method
-            //on this user
             int selected= getAdapterPosition();
             History selectedUser= histories.get(selected);
             databaseHelper.deleteUser(selectedUser);
-            Toast.makeText(context, selectedUser.toString(), Toast.LENGTH_SHORT).show();
             notifyDataSetChanged();
         }
     }

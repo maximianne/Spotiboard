@@ -30,6 +30,7 @@ public class Activity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity2);
+
         databaseHelper = new DatabaseHelper(Activity2.this, "history.db",
                 null, 1);
 
@@ -43,8 +44,7 @@ public class Activity2 extends AppCompatActivity {
                 Intent intent= new Intent(Activity2.this, Activity3.class);
                 searchText=searchView.getQuery().toString();
 
-
-                long id=databaseHelper.addHistory(new History(searchText));
+                databaseHelper.addHistory(new History(searchText));
 
                 String artistID = getArtistID(searchText);
                     if(!getArtistID(searchText).equals("")){
