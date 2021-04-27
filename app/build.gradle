@@ -58,4 +58,12 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation 'com.github.kaaes:spotify-web-api-android:0.4.1'
+
+    def fragment_version = "1.2.5"
+
+    // Java language implementation
+    implementation "androidx.fragment:fragment:$fragment_version"
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
 }
