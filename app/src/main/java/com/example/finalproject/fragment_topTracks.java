@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 public class fragment_topTracks extends Fragment {
     private View view;
-    private ArrayList<TextView> textboxes;
     private ArrayList<String> topTracks;
     private String artistN;
     private TextView v,v1,v2,v3,v4,v5,v6, v7, v8, v9, v10;

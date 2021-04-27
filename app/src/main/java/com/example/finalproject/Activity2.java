@@ -20,26 +20,32 @@ import java.io.InputStream;
 
 public class Activity2 extends AppCompatActivity {
     private Button search;
-    private Button history; //this should be an arraylist taken from the backend of the app
+    private Button history;
     private SearchView searchView;
     private String searchText;
     private SharedPreferences sharedPreferences;
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity2);
+        databaseHelper = new DatabaseHelper(Activity2.this, "history.db",
+                null, 1);
 
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
         searchView = findViewById(R.id.searchView);
-
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent= new Intent(Activity2.this, Activity3.class);
                 searchText=searchView.getQuery().toString();
+
+
+                long id=databaseHelper.addHistory(new History(searchText));
+
                 String artistID = getArtistID(searchText);
                     if(!getArtistID(searchText).equals("")){
                         Log.d("artistID:", artistID);
@@ -48,6 +54,15 @@ public class Activity2 extends AppCompatActivity {
                 else{
                     Toast.makeText(Activity2.this, "Artist does not exist", Toast.LENGTH_LONG).show();
                }
+                startActivity(intent);
+            }
+        });
+
+        history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent(Activity2.this, historyActivity.class);
+
                 startActivity(intent);
             }
         });
