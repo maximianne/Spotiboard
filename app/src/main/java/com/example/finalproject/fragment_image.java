@@ -30,6 +30,4 @@ public class fragment_image extends Fragment {
 
         return view;
     }
-
-
 }

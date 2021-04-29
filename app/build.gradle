@@ -40,6 +40,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'androidx.room:room-runtime:2.2.6'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -58,6 +59,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation 'com.github.kaaes:spotify-web-api-android:0.4.1'
+    annotationProcessor 'androidx.room:room-compiler:2.2.6'
 
     def fragment_version = "1.2.5"
 
@@ -65,5 +67,14 @@ dependencies {
     implementation "androidx.fragment:fragment:$fragment_version"
 
     implementation 'com.squareup.picasso:picasso:2.71828'
+    def lifecycleVersion = '2.3.1'
+// ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+// LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
 
+    def coroutinesVersion = '1.3.9'
+// include coroutines
+    //api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 }

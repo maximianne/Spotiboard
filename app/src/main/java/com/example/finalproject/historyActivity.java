@@ -23,7 +23,6 @@ public class historyActivity extends AppCompatActivity {
         setContentView(R.layout.history);
         recyclerView_history=findViewById(R.id.recyclerView_history);
 
-       databaseHelper = new DatabaseHelper(this);
 
         histories=databaseHelper.getAllHistory();
 

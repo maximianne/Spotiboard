@@ -37,6 +37,7 @@ public class Activity3 extends AppCompatActivity {
     private Button howTo;
     protected ArrayList<String> artist_toptracks;
     protected ArrayList<String> urls;
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +47,9 @@ public class Activity3 extends AppCompatActivity {
         sharedPreferences=this.getSharedPreferences("SPOTIFY", 0);
         artistID=intent.getStringExtra("artistID");
 
+        databaseHelper = new DatabaseHelper(Activity3.this, "history.db",
+                null, 1);
+
         topTracks= findViewById(R.id.button_frag1);
         billboard=findViewById(R.id.button_frag2);
         howTo=findViewById(R.id.button_frag3);
@@ -53,20 +57,13 @@ public class Activity3 extends AppCompatActivity {
         artistName= findViewById(R.id.textView_artistname);
         setArtistN(artistID);
 
-        //TRYING TO LOAD IMAGE AS DEFAULT
         urls=artistImageURL(artistID);
-
-        Bundle bundle2=new Bundle();
-        bundle2.putStringArrayList("url", urls);
-
-        fragment_topTracks frag= new fragment_topTracks();
-        frag.setArguments(bundle2);
-
-        //loadFragment(frag);
-
+        Bundle bundle1=new Bundle();
+        bundle1.putStringArrayList("url", urls);
+        fragment_image frag= new fragment_image();
+        frag.setArguments(bundle1);
 
         artist_toptracks=getArtistTTracks(artistID);
-
         Bundle bundle=new Bundle();
         bundle.putStringArrayList("topTracks", artist_toptracks);
 
@@ -74,6 +71,7 @@ public class Activity3 extends AppCompatActivity {
         frag1.setArguments(bundle);
 
         topTracks.setOnClickListener(v -> loadFragment(frag1));
+        billboard.setOnClickListener(v-> loadFragment(frag));
 
     }
 
@@ -84,10 +82,10 @@ public class Activity3 extends AppCompatActivity {
         spotify.getArtistTopTrack(artistID, "US", new Callback<Tracks>() {
             @Override
             public void success(Tracks tracks, retrofit.client.Response response) {
-                //Log.d("TRACKS", tracks.tracks.toString());
                 for(int i=0;i<tracks.tracks.size();i++) {
                     toAdd.add(tracks.tracks.get(i).name);
                     Log.d("TOP TRACKS", tracks.tracks.get(i).name);
+                    Log.d("tracks:", toAdd.get(i));
                 }
             }
             @Override
@@ -106,6 +104,7 @@ public class Activity3 extends AppCompatActivity {
                 Log.d("Artist success", artist.name);
                 String artistN=artist.name;
                 artistName.setText(artistN);
+               // databaseHelper.addHistory(new History(artistN));
             }
             @Override
             public void failure(RetrofitError error) {
@@ -138,7 +137,6 @@ public class Activity3 extends AppCompatActivity {
             public void success(Artist artist, retrofit.client.Response response) {
                 for(int i=0;i<artist.images.size();i++){
                     im.add(artist.images.get(i).url);
-                    Log.d("imagesurl", im.toString());
                 }
             }
             @Override
@@ -149,16 +147,9 @@ public class Activity3 extends AppCompatActivity {
     }
 
     public void loadFragment(Fragment fragment){
-        //create a fragment manager
         FragmentManager fragmentManager=getSupportFragmentManager();
-
-        //create a fragment transaction to begin the tranaction to replace the fragment
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        //repalcing the place holder = fragment container view eith the fragment that is passed as parameter
         fragmentTransaction.replace(R.id.fragment_act3,fragment);
         fragmentTransaction.commit();
     }
-
-
 }
