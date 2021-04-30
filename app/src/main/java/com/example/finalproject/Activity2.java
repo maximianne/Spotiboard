@@ -22,7 +22,8 @@ public class Activity2 extends AppCompatActivity {
     private Button history;
     private SearchView searchView;
     private String searchText;
-    DatabaseHelper databaseHelper;
+    private DatabaseHelper databaseHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +40,9 @@ public class Activity2 extends AppCompatActivity {
                 Intent intent= new Intent(Activity2.this, Activity3.class);
                 searchText=searchView.getQuery().toString();
 
-                databaseHelper.addHistory(new History(searchText));
+                long rowID =databaseHelper.addHistory(new History(searchText));
+
+                Toast.makeText(Activity2.this, "RowID: " + rowID, + Toast.LENGTH_SHORT).show();
 
                 String artistID = getArtistID(searchText);
                     if(!getArtistID(searchText).equals("")){
@@ -57,7 +60,6 @@ public class Activity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent= new Intent(Activity2.this, historyActivity.class);
-
                 startActivity(intent);
             }
         });

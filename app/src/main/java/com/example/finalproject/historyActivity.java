@@ -20,7 +20,7 @@ public class historyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.history);
         recyclerView_history=findViewById(R.id.recyclerView_history);
-
+        databaseHelper = new DatabaseHelper(historyActivity.this, "history.db",null, 1);
 
         histories=databaseHelper.getAllHistory();
 

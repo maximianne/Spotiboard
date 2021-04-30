@@ -18,7 +18,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private DatabaseHelper databaseHelper;
     private Context context;
 
-    public HistoryAdapter(List<History> histories, DatabaseHelper databaseHelper, Context context){
+    public HistoryAdapter(List<History> histories, DatabaseHelper databaseHelper,
+                          Context context){
         this.histories=histories;
         this.context=context;
         this.databaseHelper = databaseHelper;
@@ -60,9 +61,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public void onClick(View v) {
             int selected= getAdapterPosition();
             History selectedUser= histories.get(selected);
-            databaseHelper.deleteUser(selectedUser);
+            databaseHelper.deleteHistory(selectedUser);
             notifyDataSetChanged();
+
         }
     }
-
 }
