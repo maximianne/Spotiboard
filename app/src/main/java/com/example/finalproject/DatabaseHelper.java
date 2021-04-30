@@ -13,19 +13,10 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "history.db";
-    private static final int DB_VER = 1;
-
-    public DatabaseHelper(Context context) {
-        super(context, DB_NAME, null, DB_VER);
-
-    }
-
     public DatabaseHelper(@Nullable Context context, @Nullable String name,
                           @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -54,32 +45,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         statement.bindString(1,name);
 
-        long rowID= statement.executeInsert(); //executes and inserst this info, it returns a long an
-        database.close(); //maek sure to clse
+        long rowID= statement.executeInsert();
+        database.close();
 
         return rowID;
     }
 
-    //select user
-    //query all the user from the table
-
     public List<History> getAllHistory(){
 
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
-
         List<History> histories = new ArrayList<>();
-
-        //cursor --> a set of results
 
         String sqlQuery = "SELECT * FROM " + DatabaseContract.UserEntry.TABLE_NAME;
         Cursor resultSet= sqLiteDatabase.rawQuery(sqlQuery, null); //null because we are selecting all
-        //resultSet.moveToFirst() --> false --> no results
 
         if(resultSet.moveToFirst()){
-            //loop thorugh the entire result set
             do{
-                //get each row and save
-                // it into a user object and add the object to the list
                 String userName= resultSet.getString(1);
                 History history= new History(userName);
                 histories.add(history);
@@ -92,7 +73,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.close();
         return histories;
     }
-
 
     public int deleteUser(History history){
         SQLiteDatabase database = getWritableDatabase(); //we are changing it

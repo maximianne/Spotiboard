@@ -1,6 +1,5 @@
 package com.example.finalproject;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +14,6 @@ public class historyActivity extends AppCompatActivity {
     private RecyclerView recyclerView_history;
     private DatabaseHelper databaseHelper;
     private List<History> histories;
-    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){

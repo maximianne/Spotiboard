@@ -1,7 +1,6 @@
 package com.example.finalproject;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,12 +22,12 @@ public class Activity2 extends AppCompatActivity {
     private Button history;
     private SearchView searchView;
     private String searchText;
-    private SharedPreferences sharedPreferences;
-
+    DatabaseHelper databaseHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity2);
+        databaseHelper = new DatabaseHelper(Activity2.this, "history.db",null, 1);
 
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
@@ -39,6 +38,8 @@ public class Activity2 extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent= new Intent(Activity2.this, Activity3.class);
                 searchText=searchView.getQuery().toString();
+
+                databaseHelper.addHistory(new History(searchText));
 
                 String artistID = getArtistID(searchText);
                     if(!getArtistID(searchText).equals("")){

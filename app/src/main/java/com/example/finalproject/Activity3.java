@@ -47,9 +47,6 @@ public class Activity3 extends AppCompatActivity {
         sharedPreferences=this.getSharedPreferences("SPOTIFY", 0);
         artistID=intent.getStringExtra("artistID");
 
-        databaseHelper = new DatabaseHelper(Activity3.this, "history.db",
-                null, 1);
-
         topTracks= findViewById(R.id.button_frag1);
         billboard=findViewById(R.id.button_frag2);
         howTo=findViewById(R.id.button_frag3);
@@ -57,21 +54,22 @@ public class Activity3 extends AppCompatActivity {
         artistName= findViewById(R.id.textView_artistname);
         setArtistN(artistID);
 
-        urls=artistImageURL(artistID);
-        Bundle bundle1=new Bundle();
-        bundle1.putStringArrayList("url", urls);
-        fragment_image frag= new fragment_image();
-        frag.setArguments(bundle1);
+            urls=artistImageURL(artistID);
+            Bundle bundle1=new Bundle();
+            bundle1.putStringArrayList("url", urls);
+            fragment_image frag= new fragment_image();
+            frag.setArguments(bundle1);
+//            loadFragment(frag);
 
-        artist_toptracks=getArtistTTracks(artistID);
-        Bundle bundle=new Bundle();
-        bundle.putStringArrayList("topTracks", artist_toptracks);
+            artist_toptracks=getArtistTTracks(artistID);
+            Bundle bundle=new Bundle();
+            bundle.putStringArrayList("topTracks", artist_toptracks);
 
-        fragment_topTracks frag1 = new fragment_topTracks();
-        frag1.setArguments(bundle);
+            fragment_topTracks frag1 = new fragment_topTracks();
+            frag1.setArguments(bundle);
 
-        topTracks.setOnClickListener(v -> loadFragment(frag1));
-        billboard.setOnClickListener(v-> loadFragment(frag));
+            topTracks.setOnClickListener(v -> loadFragment(frag1));
+            billboard.setOnClickListener(v-> loadFragment(frag));
 
     }
 
