@@ -40,18 +40,19 @@ public class Activity2 extends AppCompatActivity {
     //Billboard stuff
     private static AsyncHttpClient client = new AsyncHttpClient();
 
-    ArrayList<String>Top100;
-    ArrayList<String>Top200;
-    ArrayList<String>top100Artist;
-
     private String header1= "x-rapidapi-key";
     private String valueHeader1= "793317ea6dmshc0e1f0eac655071p12811ejsn54cf35199919";
 
     private String header2="x-rapidapi-host";
     private String valueHeader2="billboard-api2.p.rapidapi.com";
 
+    private ArrayList<String>Top100;
     private String urlTop100 = "https://billboard-api2.p.rapidapi.com/artist-100?";
+
+    private ArrayList<String>Top200;
     private String urlTop200="https://billboard-api2.p.rapidapi.com/billboard-200?";
+
+    private ArrayList<String>top100Artist;
     private String urlHot100="https://billboard-api2.p.rapidapi.com/hot-100?";
 
     @Override
@@ -60,23 +61,14 @@ public class Activity2 extends AppCompatActivity {
         setContentView(R.layout.activity2);
         databaseHelper = new DatabaseHelper(Activity2.this, "history.db",null, 1);
 
-        Top100=new ArrayList<>();
-        Top200=new ArrayList<>();
-        top100Artist=new ArrayList<>();
-
         calendar = Calendar.getInstance();
 
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
 
-        Top100= getTop10(urlHot100, date ,Top100);
-        Log.d("ARRAY:", Top100.toString());
-
-        Top200= getTop10(urlTop200, date ,Top200);
-        Log.d("ARRAY:", Top200.toString());
-
-        Top100= getTop10(urlTop100, date ,top100Artist);
-        Log.d("ARRAY:", top100Artist.toString());
+//        Top100= getTop10(urlHot100, date ,Top100);
+//        Top200= getTop10(urlTop200, date ,Top200);
+//        Top100= getTop10(urlTop100, date ,top100Artist);
 
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
@@ -166,8 +158,17 @@ public class Activity2 extends AppCompatActivity {
                     JSONObject contents= new JSONObject((new String(responseBody)));
 
                        Log.d("Contents: ", contents.toString());
+                       JSONObject cont= contents.getJSONObject("content");
+                       int count=1;
 
-
+                       while(count<11){
+                           String temp = String.valueOf(count);
+                           JSONObject t= cont.getJSONObject(temp);
+                           String toAdd = t.getString("artist");
+                           Log.d("Artist:", toAdd);
+                           chart.add(toAdd);
+                           count+=1;
+                       }
                 }
                 catch (JSONException e) {
                     e.printStackTrace();
@@ -180,10 +181,4 @@ public class Activity2 extends AppCompatActivity {
         });
         return chart;
     }
-
-
-
-
-
-
 }
