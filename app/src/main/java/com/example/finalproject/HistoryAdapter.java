@@ -1,5 +1,6 @@
 package com.example.finalproject;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,7 +64,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             History selectedUser= histories.get(selected);
             databaseHelper.deleteHistory(selectedUser);
             notifyDataSetChanged();
-
+            ((Activity)context).recreate();
         }
     }
 }
