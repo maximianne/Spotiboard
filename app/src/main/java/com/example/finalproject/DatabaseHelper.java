@@ -48,25 +48,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.close();
         return rowId;
     }
-
-    // select
-    // query all the user from the table
     public List<History> getAllHistory() {
-        //SELECT *  FROM table_name;
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         List<History> histories = new ArrayList<>();
 
-        // cursor -> a set of results
         String sqlQuery = "SELECT * FROM " + DatabaseContract.UserEntry.TABLE_NAME;
         Cursor resultSet = sqLiteDatabase.rawQuery(sqlQuery, null);
 
-        // resultSet.moveToFirst() -> false -> you don't have any results
         if (resultSet.moveToFirst()) {
-            // loop through the entire resultSet
-
             do {
-                // get each row and save it into a User object
-                // add the object to the list
                 String user_name = resultSet.getString(1);
                 History user = new History(user_name);
                 long user_id = resultSet.getLong(0);
