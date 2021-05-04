@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -56,6 +57,7 @@ public class Activity2 extends AppCompatActivity {
     private String urlHot100="https://billboard-api2.p.rapidapi.com/hot-100?";
 
     private LinearLayout mainLayout;
+    private HorizontalScrollView hsv;
     private LinearLayout layout1;
     private LinearLayout layout2;
     private LinearLayout layout3;
@@ -68,9 +70,15 @@ public class Activity2 extends AppCompatActivity {
 
         //layout
         mainLayout= findViewById(R.id.linearLayoutA2);
+        hsv = findViewById(R.id.hsv);
         layout1= findViewById(R.id.LinearLayout1);
         layout2=findViewById(R.id.LinearLayout2);
         layout3=findViewById(R.id.LinearLayout3);
+
+//        hsv.addView(mainLayout);
+//        mainLayout.addView(layout1);
+//        mainLayout.addView(layout2);
+//        mainLayout.addView(layout3);
 
         //date stuff
         calendar = Calendar.getInstance();
@@ -78,9 +86,9 @@ public class Activity2 extends AppCompatActivity {
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
 
-//        getTop10(urlHot100, date, layout1);
-//        getTop10(urlTop100, date, layout2);
-//        getTop10(urlTop200, date, layout3);
+        getTop10(urlHot100, date, layout1);
+        getTop10(urlTop100, date, layout2);
+        getTop10(urlTop200, date, layout3);
 
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
