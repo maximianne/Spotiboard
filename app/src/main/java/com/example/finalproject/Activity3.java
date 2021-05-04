@@ -36,8 +36,7 @@ public class Activity3 extends AppCompatActivity {
     private Button billboard;
     private Button howTo;
     protected ArrayList<String> artist_toptracks;
-    protected ArrayList<String> urls;
-    private DatabaseHelper databaseHelper;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,15 +50,10 @@ public class Activity3 extends AppCompatActivity {
         billboard=findViewById(R.id.button_frag2);
         howTo=findViewById(R.id.button_frag3);
 
+        artistImageURL(artistID);
+
         artistName= findViewById(R.id.textView_artistname);
         setArtistN(artistID);
-
-            urls=artistImageURL(artistID);
-            Bundle bundle1=new Bundle();
-            bundle1.putStringArrayList("url", urls);
-            fragment_image frag= new fragment_image();
-            frag.setArguments(bundle1);
-//            loadFragment(frag);
 
             artist_toptracks=getArtistTTracks(artistID);
             Bundle bundle=new Bundle();
@@ -69,7 +63,7 @@ public class Activity3 extends AppCompatActivity {
             frag1.setArguments(bundle);
 
             topTracks.setOnClickListener(v -> loadFragment(frag1));
-            billboard.setOnClickListener(v-> loadFragment(frag));
+            //billboard.setOnClickListener(v-> loadFragment(frag));
 
     }
 
@@ -126,7 +120,7 @@ public class Activity3 extends AppCompatActivity {
         return api;
     }
 
-    public ArrayList<String> artistImageURL(String artistID){
+    public void artistImageURL(String artistID){
         SpotifyApi api= getSpotifyService();
         SpotifyService spotify = api.getService();
         ArrayList<String> im= new ArrayList<>();
@@ -136,12 +130,17 @@ public class Activity3 extends AppCompatActivity {
                 for(int i=0;i<artist.images.size();i++){
                     im.add(artist.images.get(i).url);
                 }
+                String url = im.get(0);
+                Bundle bundle1=new Bundle();
+                bundle1.putString("url", url);
+                fragment_image frag= new fragment_image();
+                frag.setArguments(bundle1);
+                loadFragment(frag);
             }
             @Override
             public void failure(RetrofitError error) {
             }
         });
-        return im;
     }
 
     public void loadFragment(Fragment fragment){

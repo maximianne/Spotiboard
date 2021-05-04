@@ -6,11 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -33,7 +34,7 @@ public class Activity2 extends AppCompatActivity {
     private SearchView searchView;
     private String searchText;
     private DatabaseHelper databaseHelper;
-    private RecyclerView recyclerView;
+
     //date stuff
     private Calendar calendar;
     private SimpleDateFormat dateFormat;
@@ -43,7 +44,7 @@ public class Activity2 extends AppCompatActivity {
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     private String header1= "x-rapidapi-key";
-    private String valueHeader1= "c6a7a1eb1amsh5b29e5a4cdfbcc7p1363bejsnbd59f45cc09c";
+    private String valueHeader1= "5f02c7dc40mshf2fe5269456695ep1e44f6jsna53ed9e18125";
     private String header2="x-rapidapi-host";
     private String valueHeader2="billboard-api2.p.rapidapi.com";
 
@@ -54,21 +55,32 @@ public class Activity2 extends AppCompatActivity {
     private ArrayList<String>top100Artist;
     private String urlHot100="https://billboard-api2.p.rapidapi.com/hot-100?";
 
+    private LinearLayout mainLayout;
+    private LinearLayout layout1;
+    private LinearLayout layout2;
+    private LinearLayout layout3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity2);
         databaseHelper = new DatabaseHelper(Activity2.this, "history.db",null, 1);
-        recyclerView= findViewById(R.id.recyclerViewBB);
-        calendar = Calendar.getInstance();
 
+        //layout
+        mainLayout= findViewById(R.id.linearLayoutA2);
+        layout1= findViewById(R.id.LinearLayout1);
+        layout2=findViewById(R.id.LinearLayout2);
+        layout3=findViewById(R.id.LinearLayout3);
+
+        //date stuff
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -2);
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
 
-       // Top100= getTop10(urlHot100, date ,Top100);
-       // Top200= getTop10(urlTop200, date ,Top200);
-        //top100Artist= getTop10(urlTop100, date ,top100Artist);
-        //setBillboardContent(Top100, Top200,top100Artist);
+//        getTop10(urlHot100, date, layout1);
+//        getTop10(urlTop100, date, layout2);
+//        getTop10(urlTop200, date, layout3);
 
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
@@ -102,7 +114,6 @@ public class Activity2 extends AppCompatActivity {
                                     dialog.cancel();
                                 }
                             });
-
                     AlertDialog alert1 = builder1.create();
                     alert1.show();
                 }
@@ -153,7 +164,7 @@ public class Activity2 extends AppCompatActivity {
         return json;
     }
 
-    public ArrayList<String> getTop10(String url, String date, ArrayList<String> chart){
+    public void getTop10(String url, String date, LinearLayout lo){
         client.addHeader("accept", "application/json");
         client.addHeader(header1, valueHeader1);
         client.addHeader(header2, valueHeader2);
@@ -161,25 +172,29 @@ public class Activity2 extends AppCompatActivity {
         String d= temp.replace('/','-');
 
         url=url+ "date="+d+"&range=1-10";
+        Log.d("REQUEST: ", url);
 
         client.get(url, new AsyncHttpResponseHandler() {
             @Override
-
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
                 try {
                     JSONObject contents= new JSONObject((new String(responseBody)));
-
                        Log.d("Contents: ", contents.toString());
                        JSONObject cont= contents.getJSONObject("content");
-                       int count=1;
+                       JSONObject titl= contents.getJSONObject("info");
+                       String title= titl.getString("chart");
+                       TextView textViewTitle = new TextView(getApplicationContext());
+                       textViewTitle.setText(title);
+                       lo.addView(textViewTitle);
 
+                       int count=1;
                        while(count<11){
                            String temp = String.valueOf(count);
+                           TextView textView = new TextView(getApplicationContext());
                            JSONObject t= cont.getJSONObject(temp);
                            String toAdd = t.getString("artist");
-                           Log.d("Artist:", toAdd);
-                           chart.add(toAdd);
+                           textView.setText(count+ ": " + toAdd);
+                           lo.addView(textView);
                            count+=1;
                        }
                 }
@@ -192,30 +207,5 @@ public class Activity2 extends AppCompatActivity {
                 Log.e("api error", new String(responseBody));
             }
         });
-        return chart;
     }
-
-//    public void setBillboardContent(ArrayList<String> one, ArrayList<String> two,
-//                                    ArrayList<String> three){
-//
-//        LinearLayoutManager layoutManager
-//                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-//
-//        RecyclerView myList = (RecyclerView) findViewById(R.id.recyclerViewBB);
-//        myList.setLayoutManager(layoutManager);
-//
-//        BillboardAdapter billboardAdapter1= new BillboardAdapter(one, this);
-//        //BillboardAdapter billboardAdapter2= new BillboardAdapter(two, this);
-//       // BillboardAdapter billboardAdapter3= new BillboardAdapter(three, this);
-//
-//        myList.setAdapter(billboardAdapter1);
-//       // myList.setAdapter(billboardAdapter2);
-//       // myList.setAdapter(billboardAdapter3);
-//
-//        myList.setLayoutManager(new LinearLayoutManager(Activity2.this));
-//
-//        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(Activity2.this, DividerItemDecoration.VERTICAL);
-//        myList.addItemDecoration(itemDecoration);
-//    }
-
 }
