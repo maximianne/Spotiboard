@@ -5,16 +5,30 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -36,35 +50,148 @@ public class Activity3 extends AppCompatActivity {
     private Button billboard;
     private Button howTo;
     protected ArrayList<String> artist_toptracks;
+    protected ArrayList<String> urls;
+    private DatabaseHelper databaseHelper;
 
+    private Switch favorite;
+    private FirebaseDatabase db;
+    private DatabaseReference refer;
+    private String ArtistName;
+    private ArrayList<String> artistsFav;
+    private String strArtistList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity3);
-        Intent intent=getIntent();
-        sharedPreferences=this.getSharedPreferences("SPOTIFY", 0);
-        artistID=intent.getStringExtra("artistID");
+        Intent intent = getIntent();
+        sharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
+        artistID = intent.getStringExtra("artistID");
 
-        topTracks= findViewById(R.id.button_frag1);
-        billboard=findViewById(R.id.button_frag2);
-        howTo=findViewById(R.id.button_frag3);
+        topTracks = findViewById(R.id.button_frag1);
+        billboard = findViewById(R.id.button_frag2);
+        howTo = findViewById(R.id.button_frag3);
+        favorite = findViewById(R.id.switch1);
 
-        artistImageURL(artistID);
-
-        artistName= findViewById(R.id.textView_artistname);
+        artistName = findViewById(R.id.textView_artistname);
         setArtistN(artistID);
 
-            artist_toptracks=getArtistTTracks(artistID);
-            Bundle bundle=new Bundle();
-            bundle.putStringArrayList("topTracks", artist_toptracks);
+        urls = artistImageURL(artistID);
+        Bundle bundle1 = new Bundle();
+        bundle1.putStringArrayList("url", urls);
+        fragment_image frag = new fragment_image();
+        frag.setArguments(bundle1);
+//            loadFragment(frag);
 
-            fragment_topTracks frag1 = new fragment_topTracks();
-            frag1.setArguments(bundle);
+        artist_toptracks = getArtistTTracks(artistID);
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("topTracks", artist_toptracks);
 
-            topTracks.setOnClickListener(v -> loadFragment(frag1));
-            //billboard.setOnClickListener(v-> loadFragment(frag));
+        fragment_topTracks frag1 = new fragment_topTracks();
+        frag1.setArguments(bundle);
 
+        topTracks.setOnClickListener(v -> loadFragment(frag1));
+        billboard.setOnClickListener(v -> loadFragment(frag));
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
+        String uid = user.getUid(); // pulls the UID
+        db = FirebaseDatabase.getInstance();
+        refer = db.getReference();
+
+        refer.child(uid).child("onSwitched").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                switchOn();
+                String val = String.valueOf(task.getResult().getValue());
+                favorite.setChecked(Boolean.parseBoolean(val));
+            }
+        });
+
+
+        favorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                refer.child(uid).child("favoriteArtists").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    //ArrayList<String> artistsFav = new ArrayList<String>();
+                    @Override
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        if (!task.isSuccessful()) {
+                            Log.e("firebase", "Error getting data", task.getException());
+                        }
+                        else {
+                            Log.e("firebase", String.valueOf(task.getResult().getValue()));
+                            String tempResult = String.valueOf(task.getResult().getValue());
+                            String tempResult2 = "null";
+                            String strArtistList = "";
+                            Log.e("firebase",tempResult);
+                            if (tempResult.equals(tempResult2)){ //when the starting value in the firebase favoriteArtists is null
+                                ArrayList<String> artistsFav = new ArrayList<>();
+                                //artistsFav.add(tempResult);
+                                Log.e("values21", ArtistName);
+                                artistsFav.add(ArtistName);
+                                Log.e("values21", String.valueOf(artistsFav));
+                                for (String s : artistsFav) {
+                                    strArtistList += s + ",";
+                                }
+                            }
+                            if (!tempResult.equals(tempResult2)) { //won't be added twice if found in database
+                                ArrayList<String> artistsFav = new ArrayList<>(Arrays.asList(tempResult.split(",")));
+                                int count = 0;
+                                String value = ArtistName;
+                                for(int i=0; i<artistsFav.size(); i++){
+                                    if(!value.equals(artistsFav.get(i))) {
+                                        count++;
+                                        Log.e("count", String.valueOf(count));
+                                        if (count == artistsFav.size()) {
+                                            artistsFav.add(ArtistName);
+                                        }
+                                    }
+                                }
+                                Log.e("values", String.valueOf(artistsFav));
+                                for (String s : artistsFav) {
+                                    strArtistList += s + ",";
+                                }
+                            }
+                            Log.e("values",strArtistList);
+                            refer.child(uid).child("favoriteArtists").setValue(strArtistList);
+                        }
+                    }
+                });
+
+
+            }
+        });
+
+               /* refer.child(uid).child("favoriteArtists").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        if (!task.isSuccessful()) {
+                            Log.e("firebase", "Error getting data", task.getException());
+                        }
+                        else {
+                            Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                        }
+                    }
+                }); */
+             /*   String val = String.valueOf(refer.child(uid).child("favoriteArtists").get());
+                Log.d("values",val);
+                if (val == null) {
+                    artistsFav.add(ArtistName);
+                    String strArtistList = "";
+                    for (int i = 0; i < artistsFav.size(); i++) {
+                        strArtistList += artistsFav.get(i) + ",";
+                    }
+                }
+                else{
+                    artistsFav.add(String.valueOf(refer.child(uid).child("favoriteArtists")));
+                    artistsFav.add(ArtistName);
+                    String strArtistList = "";
+                    for (int i = 0; i < artistsFav.size(); i++) {
+                        strArtistList += artistsFav.get(i) + ",";
+                    }
+                }
+                refer.child(uid).child("favoriteArtists").setValue(finalStrArtistList);
+            }*/
     }
 
     public ArrayList<String> getArtistTTracks(String artistID){
@@ -95,8 +222,9 @@ public class Activity3 extends AppCompatActivity {
             public void success(Artist artist, retrofit.client.Response response) {
                 Log.d("Artist success", artist.name);
                 String artistN=artist.name;
+                ArtistName=artist.name;
                 artistName.setText(artistN);
-               // databaseHelper.addHistory(new History(artistN));
+                // databaseHelper.addHistory(new History(artistN));
             }
             @Override
             public void failure(RetrofitError error) {
@@ -120,7 +248,7 @@ public class Activity3 extends AppCompatActivity {
         return api;
     }
 
-    public void artistImageURL(String artistID){
+    public ArrayList<String> artistImageURL(String artistID){
         SpotifyApi api= getSpotifyService();
         SpotifyService spotify = api.getService();
         ArrayList<String> im= new ArrayList<>();
@@ -130,17 +258,12 @@ public class Activity3 extends AppCompatActivity {
                 for(int i=0;i<artist.images.size();i++){
                     im.add(artist.images.get(i).url);
                 }
-                String url = im.get(0);
-                Bundle bundle1=new Bundle();
-                bundle1.putString("url", url);
-                fragment_image frag= new fragment_image();
-                frag.setArguments(bundle1);
-                loadFragment(frag);
             }
             @Override
             public void failure(RetrofitError error) {
             }
         });
+        return im;
     }
 
     public void loadFragment(Fragment fragment){
@@ -148,5 +271,34 @@ public class Activity3 extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_act3,fragment);
         fragmentTransaction.commit();
+    }
+
+    public void switchOn(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
+        String uid = user.getUid(); // pulls the UID
+        db = FirebaseDatabase.getInstance();
+        refer = db.getReference();
+        refer.child(uid).child("favoriteArtists").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                refer.child(uid).child("onSwitched").setValue("null");
+                String tempResult = String.valueOf(task.getResult().getValue());
+                ArrayList<String> artistsFav = new ArrayList<>(Arrays.asList(tempResult.split(",")));
+                int count = 0;
+                String value = ArtistName;
+                for (int i = 0; i < artistsFav.size(); i++) {
+                    if (!value.equals(artistsFav.get(i))) {
+                        count++;
+                        Log.e("count", String.valueOf(count));
+                        if (count == artistsFav.size()) {
+                            refer.child(uid).child("onSwitched").setValue("false");
+                        }
+                        else {
+                            refer.child(uid).child("onSwitched").setValue("true");
+                        }
+                    }
+                }
+            }
+        });
     }
 }

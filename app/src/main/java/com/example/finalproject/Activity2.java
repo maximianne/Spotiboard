@@ -76,9 +76,9 @@ public class Activity2 extends AppCompatActivity {
         date = dateFormat.format(calendar.getTime());
 
         //commented out to avoid overusing our calls
-        getTop10Artist(urlTop100, date, layout1);
-        getHot100(urlHot100, date, layout2);
-        getBillboard200(urlTop200, date, layout3);
+       // getTop10Artist(urlTop100, date, layout1);
+        //getHot100(urlHot100, date, layout2);
+        //getBillboard200(urlTop200, date, layout3);
 
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
@@ -161,7 +161,7 @@ public class Activity2 extends AppCompatActivity {
         }
         return json;
     }
-
+/*
     public void getTop10Artist(String url, String date, LinearLayout lo){
         client.addHeader("accept", "application/json");
         client.addHeader(header1, valueHeader1);
@@ -172,7 +172,7 @@ public class Activity2 extends AppCompatActivity {
         url=url+ "date="+d+"&range=1-10";
         Log.d("REQUEST: ", url);
 
-        client.get(url, new AsyncHttpResponseHandler() {
+       client.get(url, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
@@ -208,9 +208,9 @@ public class Activity2 extends AppCompatActivity {
                 Log.e("api error", new String(responseBody));
             }
         });
-    }
+    } */
 
-    public void getHot100(String url, String date, LinearLayout lo){
+ /*   public void getHot100(String url, String date, LinearLayout lo){
         client.addHeader("accept", "application/json");
         client.addHeader(header1, valueHeader1);
         client.addHeader(header2, valueHeader2);
@@ -319,5 +319,5 @@ public class Activity2 extends AppCompatActivity {
                 Log.e("api error", new String(responseBody));
             }
         });
-    }
+    }*/
 }
