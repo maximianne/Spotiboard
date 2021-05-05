@@ -24,7 +24,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import cz.msebera.android.httpclient.Header;
@@ -43,17 +42,12 @@ public class Activity2 extends AppCompatActivity {
 
     //Billboard stuff
     private static AsyncHttpClient client = new AsyncHttpClient();
-
     private String header1= "x-rapidapi-key";
-    private String valueHeader1= "5f02c7dc40mshf2fe5269456695ep1e44f6jsna53ed9e18125";
+    private String valueHeader1= "5552255592msh53a6c84a44a684cp159a03jsn13121722e3e8";
     private String header2="x-rapidapi-host";
     private String valueHeader2="billboard-api2.p.rapidapi.com";
-
-    private ArrayList<String>Top100;
     private String urlTop100 = "https://billboard-api2.p.rapidapi.com/artist-100?";
-    private ArrayList<String>Top200;
     private String urlTop200="https://billboard-api2.p.rapidapi.com/billboard-200?";
-    private ArrayList<String>top100Artist;
     private String urlHot100="https://billboard-api2.p.rapidapi.com/hot-100?";
 
     private LinearLayout mainLayout;
@@ -75,20 +69,16 @@ public class Activity2 extends AppCompatActivity {
         layout2=findViewById(R.id.LinearLayout2);
         layout3=findViewById(R.id.LinearLayout3);
 
-//        hsv.addView(mainLayout);
-//        mainLayout.addView(layout1);
-//        mainLayout.addView(layout2);
-//        mainLayout.addView(layout3);
-
         //date stuff
         calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -2);
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
 
-        getTop10(urlHot100, date, layout1);
-        getTop10(urlTop100, date, layout2);
-        getTop10(urlTop200, date, layout3);
+        //commented out to avoid overusing our calls
+        getTop10Artist(urlTop100, date, layout1);
+        getHot100(urlHot100, date, layout2);
+        getBillboard200(urlTop200, date, layout3);
 
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
@@ -145,7 +135,7 @@ public class Activity2 extends AppCompatActivity {
 
             for(int i = 0; i< spotArray.length(); i++){
                 JSONObject artObject = spotArray.getJSONObject(i);
-                if(artObject.getString("name").equals(artist)){
+                if(artObject.getString("name").equalsIgnoreCase(artist)){
                     id= artObject.getString("id");
                 }
             }
@@ -172,7 +162,7 @@ public class Activity2 extends AppCompatActivity {
         return json;
     }
 
-    public void getTop10(String url, String date, LinearLayout lo){
+    public void getTop10Artist(String url, String date, LinearLayout lo){
         client.addHeader("accept", "application/json");
         client.addHeader(header1, valueHeader1);
         client.addHeader(header2, valueHeader2);
@@ -190,11 +180,14 @@ public class Activity2 extends AppCompatActivity {
                        Log.d("Contents: ", contents.toString());
                        JSONObject cont= contents.getJSONObject("content");
                        JSONObject titl= contents.getJSONObject("info");
-                       String title= titl.getString("chart");
-                       TextView textViewTitle = new TextView(getApplicationContext());
-                       textViewTitle.setText(title);
-                       lo.addView(textViewTitle);
-
+                        String title= titl.getString("chart");
+                        String date = titl.getString("date");
+                        TextView textViewTitle = new TextView(getApplicationContext());
+                        textViewTitle.setMinLines(2);
+                        textViewTitle.setTextSize(18);
+                        textViewTitle.setText(title);
+                        textViewTitle.append(System.getProperty("line.separator"));
+                        textViewTitle.append(date);
                        int count=1;
                        while(count<11){
                            String temp = String.valueOf(count);
@@ -205,6 +198,117 @@ public class Activity2 extends AppCompatActivity {
                            lo.addView(textView);
                            count+=1;
                        }
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.e("api error", new String(responseBody));
+            }
+        });
+    }
+
+    public void getHot100(String url, String date, LinearLayout lo){
+        client.addHeader("accept", "application/json");
+        client.addHeader(header1, valueHeader1);
+        client.addHeader(header2, valueHeader2);
+        String temp= date.toString();
+        String d= temp.replace('/','-');
+
+        url=url+ "date="+d+"&range=1-10";
+        Log.d("REQUEST: ", url);
+
+        client.get(url, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    JSONObject contents= new JSONObject((new String(responseBody)));
+                    Log.d("Contents: ", contents.toString());
+                    JSONObject cont= contents.getJSONObject("content");
+                    JSONObject titl= contents.getJSONObject("info");
+                    String title= titl.getString("chart");
+                    String date = titl.getString("date");
+                    TextView textViewTitle = new TextView(getApplicationContext());
+                    textViewTitle.setMinLines(2);
+                    textViewTitle.setTextSize(18);
+                    textViewTitle.setText(title);
+                    textViewTitle.append(System.getProperty("line.separator"));
+                    textViewTitle.append(date);
+
+                    lo.addView(textViewTitle);
+                    int count=1;
+                    while(count<11){
+                        String temp = String.valueOf(count);
+                        TextView textView = new TextView(getApplicationContext());
+                        textView.setMinLines(2);
+                        JSONObject t= cont.getJSONObject(temp);
+                        String toAdd = t.getString("title");
+                        String toAdd2= t.getString("artist");
+
+                        textView.setText(count+ ": " + "'" + toAdd+ "'");
+                        textView.append(System.getProperty("line.separator"));
+                        textView.append("by " + toAdd2);
+
+                        lo.addView(textView);
+                        count+=1;
+                    }
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.e("api error", new String(responseBody));
+            }
+        });
+    }
+    public void getBillboard200(String url, String date, LinearLayout lo){
+        client.addHeader("accept", "application/json");
+        client.addHeader(header1, valueHeader1);
+        client.addHeader(header2, valueHeader2);
+        String temp= date.toString();
+        String d= temp.replace('/','-');
+
+        url=url+ "date="+d+"&range=1-10";
+        Log.d("REQUEST: ", url);
+
+        client.get(url, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    JSONObject contents= new JSONObject((new String(responseBody)));
+                    Log.d("Contents: ", contents.toString());
+                    JSONObject cont= contents.getJSONObject("content");
+                    JSONObject titl= contents.getJSONObject("info");
+                    String title= titl.getString("chart");
+                    String date = titl.getString("date");
+                    TextView textViewTitle = new TextView(getApplicationContext());
+                    textViewTitle.setMinLines(2);
+                    textViewTitle.setTextSize(18);
+                    textViewTitle.setText(title);
+                    textViewTitle.append(System.getProperty("line.separator"));
+                    textViewTitle.append(date);
+
+                    lo.addView(textViewTitle);
+                    int count=1;
+                    while(count<11){
+                        String temp = String.valueOf(count);
+                        TextView textView = new TextView(getApplicationContext());
+                        textView.setMinLines(2);
+                        JSONObject t= cont.getJSONObject(temp);
+                        String toAdd = t.getString("album");
+                        String toAdd2= t.getString("artist");
+
+                        textView.setText(count+ ": " + "'" + toAdd+ "'");
+                        textView.append(System.getProperty("line.separator"));
+                        textView.append("by " + toAdd2);
+
+                        lo.addView(textView);
+                        count+=1;
+                    }
                 }
                 catch (JSONException e) {
                     e.printStackTrace();
