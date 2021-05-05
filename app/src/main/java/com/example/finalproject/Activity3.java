@@ -50,15 +50,11 @@ public class Activity3 extends AppCompatActivity {
     private Button billboard;
     private Button howTo;
     protected ArrayList<String> artist_toptracks;
-    protected ArrayList<String> urls;
-    private DatabaseHelper databaseHelper;
 
     private Switch favorite;
     private FirebaseDatabase db;
     private DatabaseReference refer;
     private String ArtistName;
-    private ArrayList<String> artistsFav;
-    private String strArtistList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,12 +72,7 @@ public class Activity3 extends AppCompatActivity {
         artistName = findViewById(R.id.textView_artistname);
         setArtistN(artistID);
 
-        urls = artistImageURL(artistID);
-        Bundle bundle1 = new Bundle();
-        bundle1.putStringArrayList("url", urls);
-        fragment_image frag = new fragment_image();
-        frag.setArguments(bundle1);
-//            loadFragment(frag);
+        artistImageURL(artistID);
 
         artist_toptracks = getArtistTTracks(artistID);
         Bundle bundle = new Bundle();
@@ -91,7 +82,7 @@ public class Activity3 extends AppCompatActivity {
         frag1.setArguments(bundle);
 
         topTracks.setOnClickListener(v -> loadFragment(frag1));
-        billboard.setOnClickListener(v -> loadFragment(frag));
+       // billboard.setOnClickListener(v -> loadFragment(frag));
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
         String uid = user.getUid(); // pulls the UID
@@ -161,37 +152,6 @@ public class Activity3 extends AppCompatActivity {
 
             }
         });
-
-               /* refer.child(uid).child("favoriteArtists").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-                        if (!task.isSuccessful()) {
-                            Log.e("firebase", "Error getting data", task.getException());
-                        }
-                        else {
-                            Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                        }
-                    }
-                }); */
-             /*   String val = String.valueOf(refer.child(uid).child("favoriteArtists").get());
-                Log.d("values",val);
-                if (val == null) {
-                    artistsFav.add(ArtistName);
-                    String strArtistList = "";
-                    for (int i = 0; i < artistsFav.size(); i++) {
-                        strArtistList += artistsFav.get(i) + ",";
-                    }
-                }
-                else{
-                    artistsFav.add(String.valueOf(refer.child(uid).child("favoriteArtists")));
-                    artistsFav.add(ArtistName);
-                    String strArtistList = "";
-                    for (int i = 0; i < artistsFav.size(); i++) {
-                        strArtistList += artistsFav.get(i) + ",";
-                    }
-                }
-                refer.child(uid).child("favoriteArtists").setValue(finalStrArtistList);
-            }*/
     }
 
     public ArrayList<String> getArtistTTracks(String artistID){
@@ -248,7 +208,7 @@ public class Activity3 extends AppCompatActivity {
         return api;
     }
 
-    public ArrayList<String> artistImageURL(String artistID){
+    public void artistImageURL(String artistID){
         SpotifyApi api= getSpotifyService();
         SpotifyService spotify = api.getService();
         ArrayList<String> im= new ArrayList<>();
@@ -258,13 +218,19 @@ public class Activity3 extends AppCompatActivity {
                 for(int i=0;i<artist.images.size();i++){
                     im.add(artist.images.get(i).url);
                 }
+                String url = im.get(0);
+                Bundle bundle1=new Bundle();
+                bundle1.putString("url", url);
+                fragment_image frag= new fragment_image();
+                frag.setArguments(bundle1);
+                loadFragment(frag);
             }
             @Override
             public void failure(RetrofitError error) {
             }
         });
-        return im;
     }
+
 
     public void loadFragment(Fragment fragment){
         FragmentManager fragmentManager=getSupportFragmentManager();
