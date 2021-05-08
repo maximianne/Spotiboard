@@ -16,17 +16,26 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.jetbrains.annotations.NotNull;
 
 public class Activity1 extends AppCompatActivity {
 
     private String username;
     private String password;
     private Button button_login;
+    private Button button_signUp;
 
     private EditText et_username;
     private EditText et_password;
 
     private FirebaseAuth mAuth;
+    private FirebaseDatabase db;
+    private DatabaseReference refer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +49,14 @@ public class Activity1 extends AppCompatActivity {
         et_password.setHint("Password");
 
         button_login=findViewById(R.id.button_login);
+        button_signUp = findViewById(R.id.button_signUp);
 
         mAuth = FirebaseAuth.getInstance();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
+        String uid = user.getUid(); // pulls the UID
+        db = FirebaseDatabase.getInstance();
+        refer = db.getReference();
 
         button_login.setOnClickListener(new View.OnClickListener(){
 
@@ -63,6 +78,12 @@ public class Activity1 extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            refer.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                                    refer.child(uid).child("Email").setValue(username);
+                                }
+                            });
                             Toast.makeText(Activity1.this, "Logged in Successful", Toast.LENGTH_SHORT).show();
                             launchNextActivity(v);
                         }
@@ -74,6 +95,14 @@ public class Activity1 extends AppCompatActivity {
 
             }
         });
+
+        button_signUp.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                launchNextActivity2(v);
+            }
+        });
+
     }
 
     public boolean checkCredentials(String username, String password){
@@ -88,6 +117,11 @@ public class Activity1 extends AppCompatActivity {
 
     public void launchNextActivity(View v){
         Intent intent= new Intent(Activity1.this, Activity2.class);
+        startActivity(intent);
+    }
+
+    public void launchNextActivity2(View v){
+        Intent intent= new Intent(Activity1.this, CreateAccount.class);
         startActivity(intent);
     }
 

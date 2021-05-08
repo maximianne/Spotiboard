@@ -18,6 +18,8 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+import org.jetbrains.annotations.NotNull;
+
 public class MainActivity extends AppCompatActivity {
     private TextView title;
     private Button start;
@@ -41,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
         msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(this);
-
 
         title=findViewById(R.id.textView);
         start=findViewById(R.id.button);

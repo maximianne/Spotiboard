@@ -2,6 +2,7 @@ package com.example.finalproject;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,12 +12,21 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,6 +66,15 @@ public class Activity2 extends AppCompatActivity {
     private LinearLayout layout2;
     private LinearLayout layout3;
 
+    private FirebaseDatabase db;
+    private DatabaseReference refer;
+
+    private String url1;
+    private String url2;
+    private String url3;
+
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,15 +93,19 @@ public class Activity2 extends AppCompatActivity {
         calendar.add(Calendar.DATE, -2);
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
-
-        //commented out to avoid overusing our calls
-       // getTop10Artist(urlTop100, date, layout1);
-        //getHot100(urlHot100, date, layout2);
-        //getBillboard200(urlTop200, date, layout3);
-
+/*
+        url1=getTop10Artist(urlTop100, date, layout1);
+        url2=getHot100(urlHot100, date, layout2);
+        url3=getBillboard200(urlTop200, date, layout3);
+*/
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
         searchView = findViewById(R.id.searchView);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
+        String uid = user.getUid(); // pulls the UID
+        db = FirebaseDatabase.getInstance();
+        refer = db.getReference();
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +119,7 @@ public class Activity2 extends AppCompatActivity {
                 if(!getArtistID(searchText).equals("")){
                     Log.d("artistID:", artistID);
                     intent.putExtra("artistID", artistID);
+                    intent.putExtra("artistName", searchText);
                     yes=true;
                 }
                 if(yes){
@@ -161,8 +185,7 @@ public class Activity2 extends AppCompatActivity {
         }
         return json;
     }
-/*
-    public void getTop10Artist(String url, String date, LinearLayout lo){
+    public String getTop10Artist(String url, String date, LinearLayout lo){
         client.addHeader("accept", "application/json");
         client.addHeader(header1, valueHeader1);
         client.addHeader(header2, valueHeader2);
@@ -172,32 +195,72 @@ public class Activity2 extends AppCompatActivity {
         url=url+ "date="+d+"&range=1-10";
         Log.d("REQUEST: ", url);
 
-       client.get(url, new AsyncHttpResponseHandler() {
+        client.get(url, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
                     JSONObject contents= new JSONObject((new String(responseBody)));
-                       Log.d("Contents: ", contents.toString());
-                       JSONObject cont= contents.getJSONObject("content");
-                       JSONObject titl= contents.getJSONObject("info");
-                        String title= titl.getString("chart");
-                        String date = titl.getString("date");
-                        TextView textViewTitle = new TextView(getApplicationContext());
-                        textViewTitle.setMinLines(2);
-                        textViewTitle.setTextSize(18);
-                        textViewTitle.setText(title);
-                        textViewTitle.append(System.getProperty("line.separator"));
-                        textViewTitle.append(date);
-                       int count=1;
-                       while(count<11){
-                           String temp = String.valueOf(count);
-                           TextView textView = new TextView(getApplicationContext());
-                           JSONObject t= cont.getJSONObject(temp);
-                           String toAdd = t.getString("artist");
-                           textView.setText(count+ ": " + toAdd);
-                           lo.addView(textView);
-                           count+=1;
-                       }
+                    Log.d("Contents: ", contents.toString());
+                    JSONObject cont= contents.getJSONObject("content");
+                    JSONObject titl= contents.getJSONObject("info");
+                    String title= titl.getString("chart");
+                    String date = titl.getString("date");
+                    TextView textViewTitle = new TextView(getApplicationContext());
+                    textViewTitle.setMinLines(2);
+                    textViewTitle.setTextSize(18);
+                    textViewTitle.setText(title);
+                    textViewTitle.append(System.getProperty("line.separator"));
+                    textViewTitle.append(date);
+
+                    int count=1;
+                    while(count<11){
+                        String temp = String.valueOf(count);
+                        TextView textView = new TextView(getApplicationContext());
+                        JSONObject t= cont.getJSONObject(temp);
+                        String toAdd = t.getString("artist");
+                        textView.setText(count+ ": " + toAdd);
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent= new Intent(Activity2.this, Activity3.class);
+                                String Artist= null;
+                                try {
+                                    Artist = t.getString("artist");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                boolean yes=false;
+                                long rowID =databaseHelper.addHistory(new History(Artist));
+
+                                String artistID = getArtistID(Artist);
+                                if(!getArtistID(Artist).equals("")){
+                                    Log.d("artistID:", artistID);
+                                    intent.putExtra("artistID", artistID);
+                                    yes=true;
+                                }
+                                if(yes){
+                                    startActivity(intent);
+                                }
+                                else{
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(Activity2.this);
+                                    builder1.setMessage("Spotiboard seems to not have that Artist information readily available. Please check your spelling or try a different Artist.");
+                                    builder1.setCancelable(true);
+                                    builder1.setPositiveButton(
+                                            "Understand",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+                                    AlertDialog alert1 = builder1.create();
+                                    alert1.show();
+                                }
+                            }
+                        });
+                        lo.addView(textView);
+                        count+=1;
+
+                    }
                 }
                 catch (JSONException e) {
                     e.printStackTrace();
@@ -208,9 +271,10 @@ public class Activity2 extends AppCompatActivity {
                 Log.e("api error", new String(responseBody));
             }
         });
-    } */
+        return url;
+    }
 
- /*   public void getHot100(String url, String date, LinearLayout lo){
+    public String getHot100(String url, String date, LinearLayout lo){
         client.addHeader("accept", "application/json");
         client.addHeader(header1, valueHeader1);
         client.addHeader(header2, valueHeader2);
@@ -219,6 +283,9 @@ public class Activity2 extends AppCompatActivity {
 
         url=url+ "date="+d+"&range=1-10";
         Log.d("REQUEST: ", url);
+
+        String finalUrl = url;
+        String finalUrl1 = url;
 
         client.get(url, new AsyncHttpResponseHandler() {
             @Override
@@ -250,8 +317,46 @@ public class Activity2 extends AppCompatActivity {
                         textView.setText(count+ ": " + "'" + toAdd+ "'");
                         textView.append(System.getProperty("line.separator"));
                         textView.append("by " + toAdd2);
-
                         lo.addView(textView);
+
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent= new Intent(Activity2.this, Activity3.class);
+                                String Artist= null;
+                                try {
+                                    Artist = t.getString("artist");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                boolean yes=false;
+                                long rowID =databaseHelper.addHistory(new History(Artist));
+
+                                String artistID = getArtistID(Artist);
+                                if(!getArtistID(Artist).equals("")){
+                                    Log.d("artistID:", artistID);
+                                    intent.putExtra("artistID", artistID);
+                                    yes=true;
+                                }
+                                if(yes){
+                                    startActivity(intent);
+                                }
+                                else{
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(Activity2.this);
+                                    builder1.setMessage("Spotiboard seems to not have that Artist information readily available. Please check your spelling or try a different Artist.");
+                                    builder1.setCancelable(true);
+                                    builder1.setPositiveButton(
+                                            "Understand",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+                                    AlertDialog alert1 = builder1.create();
+                                    alert1.show();
+                                }
+                            }
+                        });
                         count+=1;
                     }
                 }
@@ -264,8 +369,9 @@ public class Activity2 extends AppCompatActivity {
                 Log.e("api error", new String(responseBody));
             }
         });
+        return url;
     }
-    public void getBillboard200(String url, String date, LinearLayout lo){
+    public String getBillboard200(String url, String date, LinearLayout lo){
         client.addHeader("accept", "application/json");
         client.addHeader(header1, valueHeader1);
         client.addHeader(header2, valueHeader2);
@@ -305,7 +411,44 @@ public class Activity2 extends AppCompatActivity {
                         textView.setText(count+ ": " + "'" + toAdd+ "'");
                         textView.append(System.getProperty("line.separator"));
                         textView.append("by " + toAdd2);
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent= new Intent(Activity2.this, Activity3.class);
+                                String Artist= null;
+                                try {
+                                    Artist = t.getString("artist");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                boolean yes=false;
+                                long rowID =databaseHelper.addHistory(new History(Artist));
 
+                                String artistID = getArtistID(Artist);
+                                if(!getArtistID(Artist).equals("")){
+                                    Log.d("artistID:", artistID);
+                                    intent.putExtra("artistID", artistID);
+                                    yes=true;
+                                }
+                                if(yes){
+                                    startActivity(intent);
+                                }
+                                else{
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(Activity2.this);
+                                    builder1.setMessage("Spotiboard seems to not have that Artist information readily available. Please check your spelling or try a different Artist.");
+                                    builder1.setCancelable(true);
+                                    builder1.setPositiveButton(
+                                            "Understand",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+                                    AlertDialog alert1 = builder1.create();
+                                    alert1.show();
+                                }
+                            }
+                        });
                         lo.addView(textView);
                         count+=1;
                     }
@@ -319,5 +462,6 @@ public class Activity2 extends AppCompatActivity {
                 Log.e("api error", new String(responseBody));
             }
         });
-    }*/
+        return url;
+    }
 }
