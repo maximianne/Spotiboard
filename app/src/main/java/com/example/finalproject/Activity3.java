@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -85,9 +84,7 @@ public class Activity3 extends AppCompatActivity {
         frag1.setArguments(bundle);
 
         topTracks.setOnClickListener(v -> loadFragment(frag1));
-        // billboard.setOnClickListener(v -> loadFragment(frag));
 
-        //recently added
         fragment_searchBillboard frag2=new fragment_searchBillboard();
         howTo.setOnClickListener(v-> loadFragment(frag2));
         fragment_billboardInfo frag3= new fragment_billboardInfo();

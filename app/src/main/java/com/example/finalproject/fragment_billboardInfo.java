@@ -1,6 +1,8 @@
 package com.example.finalproject;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,7 +33,10 @@ public class fragment_billboardInfo extends Fragment {
 
     private static AsyncHttpClient client = new AsyncHttpClient();
     private String header1 = "x-rapidapi-key";
-    private String valueHeader1 = "bef3c908bamsh7fbf3f00567f4afp1008c1jsnd358694fdc79";
+
+    private String valueHeader1 = "ef6a7a9139msha77acae343783f1p167214jsnc67bab1b7125";
+
+
     private String header2 = "x-rapidapi-host";
     private String valueHeader2 = "billboard-api2.p.rapidapi.com";
     private String urlTop100 = "https://billboard-api2.p.rapidapi.com/artist-100?";
@@ -41,6 +46,11 @@ public class fragment_billboardInfo extends Fragment {
     private TextView one;
     private TextView two;
     private TextView three;
+
+    private TextView four;
+    private TextView five;
+    private TextView six;
+
 
     private Calendar calendar;
     private SimpleDateFormat dateFormat;
@@ -58,6 +68,42 @@ public class fragment_billboardInfo extends Fragment {
         calendar.add(Calendar.DATE, -2);
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
+
+        searchChart1(urlTop100, date, artist_name);
+        searchChart2(urlTop200, date, artist_name);
+        searchChart3(urlHot100, date, artist_name);
+
+        one = view.findViewById(R.id.textView7);
+        two = view.findViewById(R.id.textView8);
+        three = view.findViewById(R.id.textView9);
+        four = view.findViewById(R.id.textView10);
+        five = view.findViewById(R.id.textView11);
+        six = view.findViewById(R.id.textView12);
+
+        four.setText("Check out the full chart: https://www.billboard.com/charts/artist-100");
+        four.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.billboard.com/charts/artist-100"));
+                startActivity(browserIntent);
+            }
+        });
+        five.setText("Check out the full chart: https://www.billboard.com/charts/billboard-200");
+        five.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.billboard.com/charts/billboard-200"));
+                startActivity(browserIntent);
+            }
+        });
+        six.setText("Check out the full chart: https://www.billboard.com/charts/hot-100");
+        six.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.billboard.com/charts/hot-100"));
+                startActivity(browserIntent);
+            }
+        });
 
         one = view.findViewById(R.id.textView7);
         two = view.findViewById(R.id.textView8);
@@ -110,10 +156,10 @@ public class fragment_billboardInfo extends Fragment {
                     if(infoChart1.size()>0){
                         //Top 100 artist chart
                         String Val= "The artist " + artist_name +
-                                "has appeared on the Artist Top 100 chart this week, ranked somewhere between 1-10. " +
+                                " has appeared on the Artist Top 100 chart this week. " +
                                 "It is ranked: "
-                                + infoChart1.get(0) + "on the chart with "
-                                + infoChart1.get(1) + "weeks on the charts. Last week they were at the position " +
+                                + infoChart1.get(0) + " on the chart with "
+                                + infoChart1.get(1) + " weeks on the charts. Last week they were at the position " +
                                 infoChart1.get(2);
                         one.setText(Val);
                     }
@@ -128,7 +174,10 @@ public class fragment_billboardInfo extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                one.setText("Failed to connect to the API ");
+
+                one.setText("Billboard Calls Maxed out, enter new key");
+
+
             }
         });
     }
@@ -196,7 +245,9 @@ public class fragment_billboardInfo extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                two.setText("Failed to connect to the API ");
+
+                two.setText("Billboard Calls Maxed out, enter new key");
+
             }
         });
     }
@@ -262,7 +313,8 @@ public class fragment_billboardInfo extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                three.setText("Failed to connect to the API ");
+
+                three.setText("Billboard Calls Maxed out, enter new key");
             }
         });
     }

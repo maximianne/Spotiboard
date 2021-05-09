@@ -41,6 +41,7 @@ import cz.msebera.android.httpclient.Header;
 public class Activity2 extends AppCompatActivity {
     private Button search;
     private Button history;
+    private Button starredArtist;
     private SearchView searchView;
     private String searchText;
     private DatabaseHelper databaseHelper;
@@ -53,7 +54,7 @@ public class Activity2 extends AppCompatActivity {
     //Billboard stuff
     private static AsyncHttpClient client = new AsyncHttpClient();
     private String header1= "x-rapidapi-key";
-    private String valueHeader1= "5552255592msh53a6c84a44a684cp159a03jsn13121722e3e8";
+    private String valueHeader1= "ef6a7a9139msha77acae343783f1p167214jsnc67bab1b7125";
     private String header2="x-rapidapi-host";
     private String valueHeader2="billboard-api2.p.rapidapi.com";
     private String urlTop100 = "https://billboard-api2.p.rapidapi.com/artist-100?";
@@ -93,14 +94,15 @@ public class Activity2 extends AppCompatActivity {
         calendar.add(Calendar.DATE, -2);
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
-/*
+
         url1=getTop10Artist(urlTop100, date, layout1);
         url2=getHot100(urlHot100, date, layout2);
         url3=getBillboard200(urlTop200, date, layout3);
-*/
+
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
         searchView = findViewById(R.id.searchView);
+        starredArtist = findViewById(R.id.button3);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
         String uid = user.getUid(); // pulls the UID
@@ -149,6 +151,15 @@ public class Activity2 extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        starredArtist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Activity2.this, StarredArtist.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     private String getArtistID(String artist){
@@ -211,6 +222,8 @@ public class Activity2 extends AppCompatActivity {
                     textViewTitle.setText(title);
                     textViewTitle.append(System.getProperty("line.separator"));
                     textViewTitle.append(date);
+
+                    lo.addView(textViewTitle);
 
                     int count=1;
                     while(count<11){

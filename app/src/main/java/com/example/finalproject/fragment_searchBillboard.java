@@ -1,6 +1,8 @@
 package com.example.finalproject;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,11 +41,17 @@ public class fragment_searchBillboard extends Fragment {
     private String urlHot100 = "https://billboard-api2.p.rapidapi.com/hot-100?";
 
     private String header1= "x-rapidapi-key";
-    private String valueHeader1 = "bef3c908bamsh7fbf3f00567f4afp1008c1jsnd358694fdc79";
+
+    private String valueHeader1 = "ef6a7a9139msha77acae343783f1p167214jsnc67bab1b7125";
+
     private String header2="x-rapidapi-host";
     private String valueHeader2="billboard-api2.p.rapidapi.com";
     private Button buttonSearch;
     private static AsyncHttpClient client = new AsyncHttpClient();
+
+    private TextView four;
+    private TextView five;
+    private TextView six;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.item_billboard,container, false);
@@ -57,15 +65,56 @@ public class fragment_searchBillboard extends Fragment {
         three=view.findViewById(R.id.textViewInformation3);
         buttonSearch = view.findViewById(R.id.buttonsearch);
 
+        four = view.findViewById(R.id.textView13);
+        five = view.findViewById(R.id.textView14);
+        six = view.findViewById(R.id.textView15);
+
+
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!date.getText().equals("")){
 
                     String date1= date.getText().toString();
+
                     searchChart1(urlTop100, date1, artist_name);
                     searchChart2(urlTop200, date1, artist_name);
                     searchChart3(urlHot100, date1, artist_name);
+
+                    if(!one.getText().toString().equals("Invalid date, please try a different date and check your format ")&&
+                            !two.getText().toString().equals("Invalid date, please try a different date and check your format ")&&
+                            !three.getText().toString().equals("Invalid date, please try a different date and check your format ")){
+                        four.setText("Check out the full chart: https://www.billboard.com/charts/artist-100/"+ date1);
+                        five.setText("Check out the full chart: https://www.billboard.com/charts/billboard-200/"+ date1);
+                        six.setText("Check out the full chart: https://www.billboard.com/charts/hot-100/"+ date1);
+                        four.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.billboard.com/charts/artist-100"+date1));
+                                startActivity(browserIntent);
+                            }
+                        });
+                        five.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.billboard.com/charts/billboard-200"+date1));
+                                startActivity(browserIntent);
+                            }
+                        });
+                        six.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.billboard.com/charts/hot-100"+date1));
+                                startActivity(browserIntent);
+                            }
+                        });
+
+                    }
+
+                    searchChart1(urlTop100, date1, artist_name);
+                    searchChart2(urlTop200, date1, artist_name);
+                    searchChart3(urlHot100, date1, artist_name);
+
 
                 }
             }
@@ -132,7 +181,10 @@ public class fragment_searchBillboard extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                one.setText("Failed to connect to the API ");
+
+                one.setText("Invalid date, please try a different date and check your format ");
+
+
             }
         });
     }
@@ -200,7 +252,10 @@ public class fragment_searchBillboard extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                two.setText("Failed to connect to the API ");
+
+                two.setText("Invalid date, please try a different date and check your format ");
+
+
             }
         });
     }
@@ -266,8 +321,8 @@ public class fragment_searchBillboard extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                three.setText("Failed to connect to the API ");
-            }
+
+                three.setText("Invalid date, please try a different date and check your format ");            }
         });
     }
 }
