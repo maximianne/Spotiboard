@@ -52,11 +52,9 @@ public class Activity1 extends AppCompatActivity {
         button_signUp = findViewById(R.id.button_signUp);
 
         mAuth = FirebaseAuth.getInstance();
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
-        String uid = user.getUid(); // pulls the UID
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseDatabase.getInstance();
-        refer = db.getReference();
+        refer = db.getReference();// added to code
 
         button_login.setOnClickListener(new View.OnClickListener(){
 
@@ -81,6 +79,7 @@ public class Activity1 extends AppCompatActivity {
                             refer.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                                    String uid = user.getUid(); // pulls the UID
                                     refer.child(uid).child("Email").setValue(username);
                                 }
                             });

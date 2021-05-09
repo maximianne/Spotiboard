@@ -12,21 +12,13 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,9 +59,6 @@ public class Activity2 extends AppCompatActivity {
     private LinearLayout layout2;
     private LinearLayout layout3;
 
-    private FirebaseDatabase db;
-    private DatabaseReference refer;
-
     private String url1;
     private String url2;
     private String url3;
@@ -103,11 +92,6 @@ public class Activity2 extends AppCompatActivity {
         history = findViewById(R.id.button_history);
         searchView = findViewById(R.id.searchView);
         starredArtist = findViewById(R.id.button3);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
-        String uid = user.getUid(); // pulls the UID
-        db = FirebaseDatabase.getInstance();
-        refer = db.getReference();
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
