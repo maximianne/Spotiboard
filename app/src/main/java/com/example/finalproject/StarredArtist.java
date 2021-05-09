@@ -86,7 +86,7 @@ public class StarredArtist extends AppCompatActivity {
                     temp = new TextView(getApplicationContext());
                     temp.setText(starredArtists.get(i)); //arbitrary task
                     temp.setTextSize(24);
-                    temp.setTextColor(Color.WHITE);
+                    temp.setTextColor(Color.BLACK);
                     // add the textview to the linearlayout
                     TextView finalTemp = temp;
                     temp.setOnClickListener(new View.OnClickListener() {

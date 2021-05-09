@@ -52,29 +52,32 @@ public class CreateAccount extends AppCompatActivity {
 
             createPassword = et_createPassword.getText().toString().trim();
             email = et_enterEmail.getText().toString().trim();
-            createPasswordConfirm = et_createPasswordConfirm.getText().toString(); // add later as a confirmation
-
+            createPasswordConfirm = et_createPasswordConfirm.getText().toString();
             if(TextUtils.isEmpty(createPassword)){
                 et_createPassword.setError("Password is required.");
             }
             if(TextUtils.isEmpty(email)){
-                et_enterEmail.setError("Email is required"); //if it's empty it wil take you to the main screen which is not what I want
+                et_enterEmail.setError("Email is required.");
             }
             if(createPassword.length() < 6){
                 et_createPassword.setError("Password must be >= 6 characters");
             }
-            mAuth.createUserWithEmailAndPassword(email,createPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()) {
-                        Toast.makeText(CreateAccount.this, "User Created", Toast.LENGTH_SHORT).show();
-                        launchNextActivity(v);
+            if(!createPassword.equals(createPasswordConfirm)){
+                et_createPasswordConfirm.setError("Passwords do not match.");
+            }
+            else {
+                mAuth.createUserWithEmailAndPassword(email, createPasswordConfirm).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(CreateAccount.this, "User Created", Toast.LENGTH_SHORT).show();
+                            launchNextActivity(v);
+                        } else {
+                            Toast.makeText(CreateAccount.this, "Something went wrong, please try again " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
-                    else{
-                        Toast.makeText(CreateAccount.this, "Something went wrong, please try again " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
+                });
+            }
         }
 
 

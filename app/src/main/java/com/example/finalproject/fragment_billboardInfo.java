@@ -34,7 +34,7 @@ public class fragment_billboardInfo extends Fragment {
     private static AsyncHttpClient client = new AsyncHttpClient();
     private String header1 = "x-rapidapi-key";
 
-    private String valueHeader1 = "ef6a7a9139msha77acae343783f1p167214jsnc67bab1b7125";
+    private String valueHeader1 = "9afcd10608msh0a657fbc271aadap198f29jsnfc9e2162caec";
 
 
     private String header2 = "x-rapidapi-host";
@@ -69,9 +69,9 @@ public class fragment_billboardInfo extends Fragment {
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
 
-        searchChart1(urlTop100, date, artist_name);
-        searchChart2(urlTop200, date, artist_name);
-        searchChart3(urlHot100, date, artist_name);
+       // searchChart1(urlTop100, date, artist_name);
+       // searchChart2(urlTop200, date, artist_name);
+       // searchChart3(urlHot100, date, artist_name);
 
         one = view.findViewById(R.id.textView7);
         two = view.findViewById(R.id.textView8);

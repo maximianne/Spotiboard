@@ -42,7 +42,7 @@ public class fragment_searchBillboard extends Fragment {
 
     private String header1= "x-rapidapi-key";
 
-    private String valueHeader1 = "ef6a7a9139msha77acae343783f1p167214jsnc67bab1b7125";
+    private String valueHeader1 = "9afcd10608msh0a657fbc271aadap198f29jsnfc9e2162caec";
 
     private String header2="x-rapidapi-host";
     private String valueHeader2="billboard-api2.p.rapidapi.com";
@@ -77,9 +77,9 @@ public class fragment_searchBillboard extends Fragment {
 
                     String date1= date.getText().toString();
 
-                    searchChart1(urlTop100, date1, artist_name);
-                    searchChart2(urlTop200, date1, artist_name);
-                    searchChart3(urlHot100, date1, artist_name);
+                //     searchChart1(urlTop100, date1, artist_name);
+                //    searchChart2(urlTop200, date1, artist_name);
+                //    searchChart3(urlHot100, date1, artist_name);
 
                     if(!one.getText().toString().equals("Invalid date, please try a different date and check your format ")&&
                             !two.getText().toString().equals("Invalid date, please try a different date and check your format ")&&

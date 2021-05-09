@@ -49,7 +49,7 @@ public class Activity2 extends AppCompatActivity {
     //Billboard stuff
     private static AsyncHttpClient client = new AsyncHttpClient();
     private String header1= "x-rapidapi-key";
-    private String valueHeader1= "ef6a7a9139msha77acae343783f1p167214jsnc67bab1b7125";
+    private String valueHeader1= "9afcd10608msh0a657fbc271aadap198f29jsnfc9e2162caec";
     private String header2="x-rapidapi-host";
     private String valueHeader2="billboard-api2.p.rapidapi.com";
     private String urlTop100 = "https://billboard-api2.p.rapidapi.com/artist-100?";
@@ -87,9 +87,9 @@ public class Activity2 extends AppCompatActivity {
         dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(calendar.getTime());
 
-        url1=getTop10Artist(urlTop100, date, layout1);
-        url2=getHot100(urlHot100, date, layout2);
-        url3=getBillboard200(urlTop200, date, layout3);
+      //  url1=getTop10Artist(urlTop100, date, layout1);
+      //  url2=getHot100(urlHot100, date, layout2);
+      //  url3=getBillboard200(urlTop200, date, layout3);
 
         search = findViewById(R.id.button_search);
         history = findViewById(R.id.button_history);
