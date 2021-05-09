@@ -5,6 +5,8 @@
     <queries>
         <package android:name="com.spotify.music" />
     </queries>
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -51,12 +53,13 @@
 
         </activity>
 
-    <activity android:name=".StarredArtist"
+        <activity android:name=".StarredArtist"
         android:parentActivityName=".Activity2"
         android:label= "Starred Artist"
-        >
+>
 
     </activity>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

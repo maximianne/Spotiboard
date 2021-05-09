@@ -1,13 +1,18 @@
 package com.example.finalproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +47,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import retrofit.Callback;
 import retrofit.RetrofitError;
+import safety.com.br.android_shake_detector.core.ShakeCallback;
+import safety.com.br.android_shake_detector.core.ShakeDetector;
+import safety.com.br.android_shake_detector.core.ShakeOptions;
 
 public class Activity3 extends AppCompatActivity {
 
@@ -57,6 +65,8 @@ public class Activity3 extends AppCompatActivity {
     private FirebaseDatabase db;
     private DatabaseReference refer;
     private String ArtistName;
+
+    private ShakeDetector shakeDetector;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,15 +95,29 @@ public class Activity3 extends AppCompatActivity {
 
         topTracks.setOnClickListener(v -> loadFragment(frag1));
 
-        fragment_searchBillboard frag2=new fragment_searchBillboard();
-        howTo.setOnClickListener(v-> loadFragment(frag2));
-        fragment_billboardInfo frag3= new fragment_billboardInfo();
-        billboard.setOnClickListener(v-> loadFragment(frag3));
+        fragment_searchBillboard frag2 = new fragment_searchBillboard();
+        howTo.setOnClickListener(v -> loadFragment(frag2));
+        fragment_billboardInfo frag3 = new fragment_billboardInfo();
+        billboard.setOnClickListener(v -> loadFragment(frag3));
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser(); // added to code
         String uid = user.getUid(); // pulls the UID
         db = FirebaseDatabase.getInstance();
         refer = db.getReference();
+
+        ShakeOptions options = new ShakeOptions()
+                .background(false)
+                .interval(1000)
+                .shakeCount(2)
+                .sensibility(3.0f); //HECKA sensivitve
+
+        this.shakeDetector = new ShakeDetector(options).start(this, new ShakeCallback() {
+            @Override
+            public void onShake() {
+                Intent intent = new Intent (Activity3.this, Activity2.class);
+                startActivity(intent);
+            }
+        });
 
         favorite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,13 +128,12 @@ public class Activity3 extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
                         String val = String.valueOf(task.getResult().getValue());
-                        Log.d("values",val);
-                            if(val.equals("true")){
-                                refer.child(uid).child("favoriteArtists").child(text).setValue("false");
-                            }
-                            else{
-                                refer.child(uid).child("favoriteArtists").child(text).setValue("true");
-                            }
+                        Log.d("values", val);
+                        if (val.equals("true")) {
+                            refer.child(uid).child("favoriteArtists").child(text).setValue("false");
+                        } else {
+                            refer.child(uid).child("favoriteArtists").child(text).setValue("true");
+                        }
                     }
                 });
             }

@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private SharedPreferences msharedPreferences;
     private RequestQueue queue;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
         title=findViewById(R.id.textView);
         start=findViewById(R.id.button);
         image=findViewById(R.id.imageView);
+
+        Picasso.get().load("https://i.pinimg.com/564x/1d/b2/18/1db2180a5fda88090995fa1b2f1d79b0.jpg").into(image);
+
+
         start.setText("Start");
         start.setOnClickListener(new View.OnClickListener() {
             @Override

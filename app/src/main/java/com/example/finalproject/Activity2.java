@@ -3,6 +3,8 @@ package com.example.finalproject;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import cz.msebera.android.httpclient.Header;
+import safety.com.br.android_shake_detector.core.ShakeDetector;
 
 public class Activity2 extends AppCompatActivity {
     private Button search;
